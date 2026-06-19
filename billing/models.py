@@ -51,6 +51,7 @@ class Product(models.Model):
     suppliers = models.ManyToManyField(Supplier, related_name='products', blank=True)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     stock = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name='Image')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -59,6 +60,11 @@ class Product(models.Model):
         verbose_name_plural = 'Products'
         ordering = ['name']
     def __str__(self): return f'{self.name} ({self.brand.name})'
+
+    @property
+    def balance(self):
+        """Valor total del inventario: precio unitario × stock."""
+        return round(self.unit_price * self.stock, 2)
 
 class Customer(models.Model):
     """Clientes. OneToOne con CustomerProfile."""
