@@ -2,6 +2,45 @@ from django.contrib import messages
 from django.shortcuts import redirect
 
 
+class ExportMixin:
+    """
+    Mixin genérico de exportación a PDF / Excel para vistas CBV ListView.
+
+    En la subclase define:
+        export_title   = 'Nombre del listado'
+        export_columns = [('Encabezado', 'field_o_callable'), ...]
+
+    Agrega ?format=pdf o ?format=excel a cualquier URL del listado.
+    Los filtros GET activos se preservan automáticamente en `export_qs`.
+    """
+
+    export_title = 'Listado'
+    export_columns = []
+
+    def get_export_columns(self):
+        """Devuelve las columnas a exportar. Sobreescribir en subclases para columnas dinámicas."""
+        return self.export_columns
+
+    def get(self, request, *args, **kwargs):
+        fmt = request.GET.get('format', '').lower()
+        if fmt in ('pdf', 'excel'):
+            from shared.exports import export_to_pdf, export_to_excel
+            qs = self.get_queryset()
+            columns = self.get_export_columns()
+            fn = export_to_pdf if fmt == 'pdf' else export_to_excel
+            return fn(qs, columns, self.export_title)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        params = self.request.GET.copy()
+        params.pop('format', None)
+        params.pop('page', None)
+        params.pop('cols', None)
+        ctx['export_qs'] = params.urlencode()
+        return ctx
+
+
 class StaffRequiredMixin:
     """
     Mixin que verifica si el usuario es miembro del staff.
