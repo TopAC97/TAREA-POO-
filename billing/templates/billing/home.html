@@ -1,0 +1,95 @@
+{% extends 'billing/base.html' %}
+{% block title %}Home - Sales System{% endblock %}
+{% block content %}
+
+<!-- Bienvenida -->
+<div class="p-4 mb-4 bg-light rounded-3">
+  <h1>Welcome, {{ user.first_name|default:user.username }}!</h1>
+  <p class="lead">Sales & Billing Management System</p>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary">
+      <div class="card-body text-center">
+        <h2>{{ total_brands }}</h2>
+        <p>Brands</p>
+        <a href="{% url 'billing:brand_list' %}" class="text-white">View all</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success">
+      <div class="card-body text-center">
+        <h2>{{ total_products }}</h2>
+        <p>Products</p>
+        <a href="{% url 'billing:product_list' %}" class="text-white">View all</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-info">
+      <div class="card-body text-center">
+        <h2>{{ total_customers }}</h2>
+        <p>Customers</p>
+        <a href="{% url 'billing:customer_list' %}" class="text-white">View all</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning">
+      <div class="card-body text-center">
+        <h2>{{ total_invoices }}</h2>
+        <p>Invoices</p>
+        <a href="{% url 'billing:invoice_list' %}" class="text-white">View all</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Últimas facturas -->
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header bg-dark text-white"><h5>Recent Invoices</h5></div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <thead><tr><th>#</th><th>Customer</th><th>Date</th><th>Total</th></tr></thead>
+          <tbody>
+            {% for inv in recent_invoices %}
+            <tr>
+              <td>{{ inv.id }}</td>
+              <td>{{ inv.customer }}</td>
+              <td>{{ inv.invoice_date|date:"d/m/Y" }}</td>
+              <td>${{ inv.total }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">No invoices yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Productos con bajo stock -->
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header bg-danger text-white"><h5>Low Stock Alert</h5></div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <thead><tr><th>Product</th><th>Stock</th></tr></thead>
+          <tbody>
+            {% for p in low_stock %}
+            <tr><td>{{ p.name }}</td><td><span class="badge bg-danger">{{ p.stock }}</span></td></tr>
+            {% empty %}
+            <tr><td colspan="2" class="text-center text-success">All products have stock.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

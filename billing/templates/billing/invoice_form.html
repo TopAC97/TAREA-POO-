@@ -1,0 +1,59 @@
+{% extends 'billing/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card shadow">
+  <div class="card-header bg-warning text-dark"><h4>{{ title }}</h4></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Cabecera: seleccionar cliente -->
+      <div class="mb-3">
+        <label class="form-label fw-bold">Customer</label>
+        {{ form.customer }}
+        {% for error in form.customer.errors %}
+        <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Líneas de detalle -->
+      <h5 class="mt-4 mb-3">Invoice Details</h5>
+      {{ formset.management_form }}
+
+      <table class="table table-bordered">
+        <thead class="table-secondary">
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail_form in formset %}
+          <tr>
+            <td>{{ detail_form.product }}</td>
+            <td>{{ detail_form.quantity }}</td>
+            <td>{{ detail_form.unit_price }}</td>
+            <td class="text-center">
+              {% if detail_form.instance.pk %}
+                {{ detail_form.DELETE }}
+              {% endif %}
+            </td>
+            {{ detail_form.id }}
+            {% for error in detail_form.errors.values %}
+              <td colspan="4" class="text-danger">{{ error }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <button type="submit" class="btn btn-warning">
+        Create Invoice
+      </button>
+      <a href="{% url 'billing:invoice_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

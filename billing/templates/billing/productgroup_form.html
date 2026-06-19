@@ -1,0 +1,26 @@
+{% extends 'billing/base.html' %}
+{% block title %}Product Group{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white"><h4>Product Group</h4></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-bold">{{ field.label }}</label>
+            {{ field }}
+            <small class="text-muted">{{ field.help_text }}</small>
+            {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">Save</button>
+          <a href="{% url 'billing:productgroup_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

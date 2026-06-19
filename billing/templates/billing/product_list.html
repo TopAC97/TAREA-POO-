@@ -1,0 +1,35 @@
+{% extends 'billing/base.html' %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<h2>Products</h2>
+<a href="{% url 'billing:product_create' %}" class="btn btn-primary mb-3">+ New Product</a>
+<table class="table table-striped table-hover">
+  <thead class="table-dark">
+    <tr><th>Name</th><th>Brand</th><th>Group</th><th>Price</th><th>Stock</th><th>Suppliers</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item.name }}</td>
+      <td>{{ item.brand.name }}</td>
+      <td>{{ item.group.name }}</td>
+      <td>${{ item.unit_price }}</td>
+      <td>{{ item.stock }}</td>
+      <td>
+        {% for s in item.suppliers.all %}
+          <span class="badge bg-info">{{ s.name }}</span>
+        {% empty %}
+          <span class="text-muted">None</span>
+        {% endfor %}
+      </td>
+      <td>
+        <a href="{% url 'billing:product_update' item.pk %}" class="btn btn-sm btn-warning">Edit</a>
+        <a href="{% url 'billing:product_delete' item.pk %}" class="btn btn-sm btn-danger">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" class="text-center">No products.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
